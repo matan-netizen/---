@@ -87,7 +87,9 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   fi
 
 # Generate .git_sha file with current commit hash
-RUN git rev-parse HEAD > /app/.git_sha
+# Platforms like Railway build without a .git directory and pass the commit SHA as a build arg instead
+ARG RAILWAY_GIT_COMMIT_SHA
+RUN (git rev-parse HEAD 2>/dev/null || echo "${RAILWAY_GIT_COMMIT_SHA:-unknown}") > /app/.git_sha
 
 # Remove unnecessary files
 RUN rm -rf /gems/ruby/3.4.0/cache/*.gem \
